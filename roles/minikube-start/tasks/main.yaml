@@ -1,0 +1,28 @@
+- name: Start minikube
+  ansible.builtin.shell: "minikube start --driver={{ minikube_driver }}"
+  register: minikube_start_result
+
+- name: Display minikube start output
+  ansible.builtin.debug:
+    var: minikube_start_result.stdout_lines
+
+- name: Enable ingress
+  when: ingress_enabled is true
+  block:
+    - name: Enable ingress
+      ansible.builtin.shell: "minikube addons enable ingress"
+      register: ingress_enable_result
+
+    - name: Display ingress enable output
+      ansible.builtin.debug:
+        var: ingress_enable_result.stdout_lines
+
+- name: Get cluster info
+  ansible.builtin.shell: "kubectl cluster-info"
+  register: cluster_info_result
+
+- name: Display cluster-info output
+  ansible.builtin.debug:
+    var: cluster_info_result.stdout_lines
+
+    

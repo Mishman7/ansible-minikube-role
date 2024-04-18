@@ -1,0 +1,7 @@
+- name: Install minikube and deploy helloapp
+  gather_facts: false
+  hosts: centos
+  roles:
+    - minikube-install
+    - minikube-start
+    - deploy-helloapp

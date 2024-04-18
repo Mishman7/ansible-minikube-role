@@ -1,0 +1,19 @@
+- name: Read definition template file and deploy
+  kubernetes.core.k8s:
+    state: present
+    template: 'deployment.j2'
+    wait: true
+
+- name: Read definition template file and create service
+  kubernetes.core.k8s:
+    state: present
+    template: 'service.j2'
+
+- name: Read definition template file and create ingress
+  kubernetes.core.k8s:
+    state: present
+    template: 'ingress.j2'
+
+- name: Visit helloapp
+  include_tasks: curl-app.yaml
+  loop: "{{ range(1, 10) }}"

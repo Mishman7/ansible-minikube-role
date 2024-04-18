@@ -1,0 +1,7 @@
+docker_repo: "https://download.docker.com/linux/centos/docker-ce.repo"
+install_dir: /usr/local/bin
+download_dir: /tmp
+kubectl_ver: v1.30.0
+kubectl_download_url: "https://dl.k8s.io/release/{{ kubectl_ver }}/bin/linux/amd64/kubectl"
+minikube_ver: v1.32.0
+minikube_download_url: "https://storage.googleapis.com/minikube/releases/{{ minikube_ver }}/minikube-linux-amd64"

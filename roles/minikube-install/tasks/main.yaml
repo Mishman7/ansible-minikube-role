@@ -1,0 +1,124 @@
+- name: Add docker-ce repo
+  become: true
+  ansible.builtin.get_url:
+    url: "{{ docker_repo }}"
+    dest: /etc/yum.repos.d/docer-ce.repo
+
+- name: Enable docker repo
+  become: true
+  ansible.builtin.ini_file:
+    dest: /etc/yum.repos.d/docer-ce.repo
+    section: docker-ce-stable
+    option: enabled
+    value: 1
+
+- name: Install docker and curl
+  become: true
+  ansible.builtin.dnf:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+      - curl
+      - conntrack
+    state: latest
+    allowerasing: true
+    nobest: true
+
+- name: Start and enable docker
+  become: true
+  ansible.builtin.systemd_service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Add user to necesarry groups
+  become: true
+  ansible.builtin.user: 
+    name: '{{ ansible_ssh_user }}'
+    groups:
+      - docker
+      - libvirt
+    append: true
+
+- name: Reset ssh connection to allow user changes to affect 'current login user'
+  ansible.builtin.meta: reset_connection
+
+- name: Check docker installation
+  ansible.builtin.shell: docker --version
+  register: docker_ver_result
+
+- name: Display docker version output
+  ansible.builtin.debug:
+    var: docker_ver_result.stdout_lines
+
+- name: Ensure installation dir exists
+  become: true
+  ansible.builtin.file:
+    state: directory
+    owner: root
+    group: root
+    mode: 'u=rwx,go=rx'
+    dest: '{{ install_dir }}'
+
+- name: Download kubectl
+  ansible.builtin.get_url:
+    url: '{{ kubectl_download_url }}'
+    dest: '{{ download_dir }}/kubectl'
+    force: false
+    mode: 'u=rw,go=r'
+
+- name: Install kubectl
+  become: true
+  ansible.builtin.copy:
+    src: '{{ download_dir }}/kubectl'
+    remote_src: true
+    dest: '{{ install_dir }}/kubectl'
+    force: true
+    owner: root
+    group: root
+    mode: 'u=rwx,go=rx'
+
+- name: Check kubectl installation
+  ansible.builtin.shell: kubectl version --client
+  register: kubectl_ver_result
+
+- name: Display kubectl version output
+  ansible.builtin.debug:
+    var: kubectl_ver_result.stdout_lines
+
+- name: Download minikube
+  ansible.builtin.get_url:
+    url: '{{ minikube_download_url }}'
+    dest: '{{ download_dir }}/minikube'
+    force: false
+    mode: 'u=rw,go=r'
+
+- name: Install minikube
+  become: true
+  ansible.builtin.copy:
+    src: '{{ download_dir }}/minikube'
+    remote_src: true
+    dest: '{{ install_dir }}/minikube'
+    force: true
+    owner: root
+    group: root
+    mode: 'u=rwx,go=rx'
+
+- name: Check minikube installation
+  ansible.builtin.shell: minikube version
+  register: minikube_ver_result
+
+- name: Display minikube version output
+  ansible.builtin.debug:
+    var: minikube_ver_result.stdout_lines
+
+- name: Install python packages for ansible 
+  become: true
+  ansible.builtin.pip:
+    name:
+      - kubernetes
+      - PyYAML
+      - jsonpatch

@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ app_name }}
+  name: {{ app_name }}
+  namespace: {{ app_namespace }}
+spec:
+  replicas: {{ num_replicas }}
+  selector:
+    matchLabels:
+      app: {{ app_name }}
+  template:
+    metadata:
+      labels:
+        app: {{ app_name }}
+    spec:
+      containers:
+      - image: {{ app_image_name }}
+        name: hello-app
+        ports:
+          - containerPort: 8080

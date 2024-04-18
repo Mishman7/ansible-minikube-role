@@ -1,0 +1,5 @@
+num_replicas: 2
+app_name: helloapp
+app_host: helloapp.info
+app_image_name: gcr.io/google-samples/hello-app:1.0
+app_namespace: default

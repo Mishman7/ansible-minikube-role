@@ -1,0 +1,7 @@
+- name: Curl app host
+  ansible.builtin.shell: 'curl --resolve "{{ app_host }}:80:$( minikube ip )" -i http://{{ app_host }}'
+  register: curl_app_result
+
+- name: Display curl app output
+  ansible.builtin.debug:
+    var: curl_app_result.stdout_lines
