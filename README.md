@@ -27,3 +27,4 @@ ansible-playbook playbook.yaml
 ansible-playbook playbook.yaml --diff -v
 ```
 **Примечание:** kubeconfig генерится при старте миникуба и находится на удалённом хосте (на котором выполняется playbook).
+Тестирование производилось на вирутальной машине с CentOS 8 Stream, в локальной сети.
