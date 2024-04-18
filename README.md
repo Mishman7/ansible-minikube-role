@@ -1,1 +1,29 @@
-Ansible roles example that install minikube on CentOS 8, start minikube and deploy sample application.
+Роли Ansible для установки minikube на CentOS 8, старта minikube и деплоя демонстрационного приложения.
+
+## Перед тем, как начать:
+1. Настройте ssh доступ по ключу с ansible хоста на удаленный хост с CentOS 8, где будет разворачиваться minikube;
+2. На удаленном хосте настройте выполнение sudo без пароля для пользователя, который будет использоваться для ssh соединения;
+3. Укажите адрес удаленного хоста в hosts.ini в группе "centos";
+4. В переменной remote_user, в файле ansible.cfg, укажите пользователя, который будет использоваться для соединения с удаленным хостом.
+
+## Основное содержание
+Проект содержит три роли: minikube-install, minikube-start и deploy-helloapp, которые могут использоваться в указанном порядке или по отдельности.
+
+**Роль minikube-install** производит добавление и включение репозитория docker, устанавливает пакеты связанные с docker, стартует сервис docker и проверяет установку, проверяет директорию для установки kubectl и minikube, устанавливает kubectl и minikube и проверяет их установку, устанавливает python зависимости на удаленном хосте для работы модуля ansible k8s.
+
+**Роль minikube-start** производит старт minikube с драйвером docker и, если переменная ingress_enabled: true, то также подключает в minikube аддон ingress nginx.
+
+**Роль deploy-helloapp** используя шаблоны создает deployment приложения gcr.io/google-samples/hello-app:1.0, service и ingress, а также проверяет ответ от развернутого приложения (проверяется балансировка запросов).
+
+Файл playbook.yaml использует три указанных роли и группу "centos".
+
+## Как использовать:
+Для запуска playbook выполните:
+```
+ansible-playbook playbook.yaml
+```
+или, для более информативного вывода:
+```
+ansible-playbook playbook.yaml --diff -v
+```
+**Примечание:** kubeconfig генерится при старте миникуба и находится на удалённом хосте (на котором выполняется playbook).
